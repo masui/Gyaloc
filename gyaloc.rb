@@ -51,7 +51,7 @@ mapurl = gyazodata[:metadata][:url]
 puts mapurl
 match = (mapurl =~ /google.com.*maps\/@((\d+\.\d+)),((\d+\.\d+)),/)
 unless match
-  STDERR.put "緯度経度が定義されていません"
+  STDERR.puts "緯度経度が定義されていません"
   exit
 end
 lat = $1
@@ -63,3 +63,9 @@ system "exiftool -GPSLatitude=#{lat} -GPSLongitude=#{long} /tmp/map.jpg"
 
 gyazo.upload imagefile: "/tmp/map.jpg"
 
+res = gyazo.upload imagefile: "/tmp/map.jpg"
+
+sleep 1
+url = res[:permalink_url]
+
+system "open #{url}"
