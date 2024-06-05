@@ -57,8 +57,10 @@ end
 lat = $1
 long = $3
 
+system "wget https://s3-ap-northeast-1.amazonaws.com/masui.org/1/b/1b7b5977b1ee7e3fb73c495332f70547.jpg -O /tmp/template.jpg"
+
 system "exiftool -all= /tmp/map.jpg"
-system "exiftool -TagsFromFile template.jpg -all:all /tmp/map.jpg"
+system "exiftool -TagsFromFile /tmp/template.jpg -all:all /tmp/map.jpg"
 system "exiftool -GPSLatitude=#{lat} -GPSLongitude=#{long} /tmp/map.jpg"
 
 gyazo.upload imagefile: "/tmp/map.jpg"
