@@ -49,7 +49,7 @@ gyazodata = gyazo.image image_id: gyazo_id
 mapurl = gyazodata[:metadata][:url]
 
 puts mapurl
-match = (mapurl =~ /google.com.*maps\/@((\d+\.\d+)),((\d+\.\d+)),/)
+match = (mapurl =~ /google.com.*maps.*\/@((\d+\.\d+)),((\d+\.\d+)),/)
 unless match
   STDERR.puts "緯度経度が定義されていません"
   exit
