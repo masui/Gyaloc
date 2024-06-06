@@ -31,6 +31,6 @@
   </ul>
   <li>Gyazoのアクセストークン</li>
   <ul>
-    <li><a href="https://gyazo.com/oauth/applications">こちら</a>から取得してください</li>
+    <li><a href="https://gyazo.com/api">こちら</a>を参照ください</li>
   </ul>
 </ul>
