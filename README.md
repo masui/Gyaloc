@@ -30,4 +30,7 @@
     <li><code>% brew install exiftool</code></li>
   </ul>
   <li>Gyazoのアクセストークン</li>
+  <ul>
+    <li><a href="https://gyazo.com/oauth/applications">こちら</a>から取得してください</li>
+  </ul>
 </ul>
