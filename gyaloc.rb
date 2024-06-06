@@ -1,5 +1,4 @@
 require 'gyazo'
-require 'net/http'
 
 gyazo_url = `pbpaste`
 gyazo_id = nil
@@ -10,36 +9,19 @@ else
   exit
 end
 
-# STDERR.puts "GyazoのURLは#{gyazo_url}"
+STDERR.puts "GyazoのURLは#{gyazo_url}"
 
-def url_exist?(uri)
-  begin
-    url = URI.parse(uri)
-    req = Net::HTTP.new(url.host, url.port)
-    req.use_ssl = true if url.scheme == 'https'
-    res = req.request_head(url.path)
-    return URI(res['location']).exists? if %w(301 302).include?(res.code)
-    return res.code == '200'
-  rescue
-    return false
-  end
-end
+system "/bin/rm -f /tmp/__raw /tmp/__map.jpg /tmp/__map.png"
 
-jpg = "#{gyazo_url}.jpg"
-png = "#{gyazo_url}.png"
+# rawデータを取得
+system "wget -O /tmp/__raw https://gyazo.com/#{gyazo_id}/raw"
 
-system "/bin/rm -f /tmp/map.jpg /tmp/map.png"
-
-if url_exist?(jpg)
-  puts "try jpg"
-  puts jpg
-  system "wget -O /tmp/map.jpg #{jpg}"
-# elsif url_exist?(png)
+# JPEGかPNGなのでJPEGに変換
+if `file /tmp/__raw`.match(/PNG image data/)
+  system "/bin/mv /tmp/__raw /tmp/__map.png"
+  system "/usr/local/bin/convert /tmp/__map.png /tmp/__map.jpg"
 else
-  puts "try png"
-  puts png
-  system "wget -O /tmp/map.png #{png}"
-  system "convert /tmp/map.png /tmp/map.jpg"
+  system "/bin/mv /tmp/__raw /tmp/__map.jpg"
 end
 
 gyazo = Gyazo::Client.new(:access_token => ENV['GYAZO_TOKEN'])
@@ -48,7 +30,6 @@ gyazodata = gyazo.image image_id: gyazo_id
 
 mapurl = gyazodata[:metadata][:url]
 
-puts mapurl
 match = (mapurl =~ /google.com.*maps.*\/@((\d+\.\d+)),((\d+\.\d+)),/)
 unless match
   STDERR.puts "緯度経度が定義されていません"
@@ -57,15 +38,14 @@ end
 lat = $1
 long = $3
 
+# テンプレート写真ファイルを取得
 system "wget https://s3-ap-northeast-1.amazonaws.com/masui.org/1/b/1b7b5977b1ee7e3fb73c495332f70547.jpg -O /tmp/template.jpg"
 
-system "exiftool -all= /tmp/map.jpg"
-system "exiftool -TagsFromFile /tmp/template.jpg -all:all /tmp/map.jpg"
-system "exiftool -GPSLatitude=#{lat} -GPSLongitude=#{long} /tmp/map.jpg"
+system "exiftool -all= /tmp/__map.jpg"
+system "exiftool -TagsFromFile /tmp/template.jpg -all:all /tmp/__map.jpg"
+system "exiftool -GPSLatitude=#{lat} -GPSLongitude=#{long} /tmp/__map.jpg"
 
-gyazo.upload imagefile: "/tmp/map.jpg"
-
-res = gyazo.upload imagefile: "/tmp/map.jpg"
+res = gyazo.upload imagefile: "/tmp/__map.jpg"
 
 sleep 1
 url = res[:permalink_url]
