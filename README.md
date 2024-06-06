@@ -21,7 +21,13 @@
 
 <ul>
   <li>Mac</li>
-  <li><a href="https://exiftool.org/">exiftool</a></li>
   <li>wget</li>
+  <ul>
+    <li><code>% brew install wget</code></li>
+  </ul>
+  <li><a href="https://exiftool.org/">exiftool</a></li>
+  <ul>
+    <li><code>% brew install exiftool</code></li>
+  </ul>
   <li>Gyazoのアクセストークン</li>
 </ul>
